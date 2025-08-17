@@ -1,12 +1,12 @@
 // Core types for the Employee Awards Automation system
-export type UserRole = 'admin' | 'manager' | 'employee';
+export type UserRole = "admin" | "manager" | "employee";
 
 export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  department: string;
+  id?: string;
+  name?: string;
+  email?: string;
+  role: string; // simplify for now
+  department?: string;
   avatar?: string;
 }
 
@@ -17,7 +17,7 @@ export interface Nomination {
   department: string;
   nominatorName: string;
   nominatorId: string;
-  awardType: 'monthly' | 'quarterly' | 'yearly';
+  awardType: "monthly" | "quarterly" | "yearly";
   title: string;
   description: string;
   resourceName: string;
@@ -31,11 +31,16 @@ export interface Nomination {
   biasFlags: string[];
   hasBiasIssues: boolean;
   dateSubmitted: string;
-  status: 'pending' | 'approved' | 'rejected' | 'under_review';
+  status: "pending" | "approved" | "rejected" | "under_review";
   evidence: Evidence;
 }
 
-export type CoreValue = 'customer_delight' | 'innovation' | 'team_work' | 'being_fair' | 'ownership';
+export type CoreValue =
+  | "customer_delight"
+  | "innovation"
+  | "team_work"
+  | "being_fair"
+  | "ownership";
 
 export interface SupportingDocument {
   id: string;
@@ -54,7 +59,7 @@ export interface NominationFormData {
   coreValues: CoreValue[];
   overallRating: number;
   supportingDocuments: File[];
-  awardType: 'monthly' | 'quarterly' | 'yearly';
+  awardType: "monthly" | "quarterly" | "yearly";
 }
 export interface Evidence {
   slackMessages: SlackMessage[];
@@ -84,7 +89,7 @@ export interface AttendanceRecord {
   date: string;
   hoursWorked: number;
   overtime: number;
-  status: 'present' | 'absent' | 'partial';
+  status: "present" | "absent" | "partial";
 }
 
 export interface DashboardMetrics {
