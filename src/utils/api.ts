@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://35.154.210.156:8000", // adjust as per backend
+  baseURL: "https://backend.postbox4all.xyz", // adjust as per backend
 });
 
 // Add Authorization header if token exists
