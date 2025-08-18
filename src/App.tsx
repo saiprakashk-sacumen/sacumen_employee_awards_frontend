@@ -1,16 +1,22 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { useAuth } from './contexts/AuthContext';
-import { Layout } from './components/layout/Layout';
-import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
-import { Nominations } from './pages/Nominations';
-import { SubmitNomination } from './pages/SubmitNomination';
-import { Reports } from './pages/Reports';
-import { AIInsights } from './pages/AIInsights';
-import { Settings } from './pages/Settings';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { useAuth } from "./contexts/AuthContext";
+import { Layout } from "./components/layout/Layout";
+import { Login } from "./pages/Login";
+import { Dashboard } from "./pages/Dashboard";
+import { Nominations } from "./pages/Nominations";
+import { SubmitNomination } from "./pages/SubmitNomination";
+import { Reports } from "./pages/Reports";
+import { AIInsights } from "./pages/AIInsights";
+import { Settings } from "./pages/Settings";
+import { Signup } from "./pages/signup";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -30,6 +36,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
       <Route
         path="/*"
         element={

@@ -1,25 +1,36 @@
-import React from 'react';
-import { Card } from '../components/ui/Card';
-import { Brain, AlertTriangle, TrendingUp, Users } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import React from "react";
+import { Card } from "../components/ui/Card";
+import { Brain, AlertTriangle, TrendingUp, Users } from "lucide-react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
 export function AIInsights() {
   // Mock data for bias detection
   const biasBreakdown = [
-    { name: 'Gender Bias', value: 35, color: '#EF4444' },
-    { name: 'Age Bias', value: 28, color: '#F97316' },
-    { name: 'Department Bias', value: 22, color: '#EAB308' },
-    { name: 'Tenure Bias', value: 15, color: '#84CC16' },
+    { name: "Gender Bias", value: 35, color: "#EF4444" },
+    { name: "Age Bias", value: 28, color: "#F97316" },
+    { name: "Department Bias", value: 22, color: "#EAB308" },
+    { name: "Tenure Bias", value: 15, color: "#84CC16" },
   ];
 
   // Mock data for sentiment trends
   const sentimentTrends = [
-    { department: 'Engineering', positive: 78, neutral: 15, negative: 7 },
-    { department: 'Marketing', positive: 65, neutral: 22, negative: 13 },
-    { department: 'Sales', positive: 82, neutral: 12, negative: 6 },
-    { department: 'HR', positive: 74, neutral: 18, negative: 8 },
-    { department: 'Finance', positive: 69, neutral: 25, negative: 6 },
-    { department: 'Operations', positive: 71, neutral: 20, negative: 9 },
+    { department: "Engineering", positive: 78, neutral: 15, negative: 7 },
+    { department: "Marketing", positive: 65, neutral: 22, negative: 13 },
+    { department: "Sales", positive: 82, neutral: 12, negative: 6 },
+    { department: "HR", positive: 74, neutral: 18, negative: 8 },
+    { department: "Finance", positive: 69, neutral: 25, negative: 6 },
+    { department: "Operations", positive: 71, neutral: 20, negative: 9 },
   ];
 
   return (
@@ -30,7 +41,8 @@ export function AIInsights() {
           AI Insights
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Bias detection and sentiment analysis powered by artificial intelligence
+          Bias detection and sentiment analysis powered by artificial
+          intelligence
         </p>
       </div>
 
@@ -107,7 +119,9 @@ export function AIInsights() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
+                }
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -121,13 +135,18 @@ export function AIInsights() {
           </ResponsiveContainer>
           <div className="mt-4 space-y-2">
             {biasBreakdown.map((item, index) => (
-              <div key={index} className="flex items-center justify-between text-sm">
+              <div
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center">
                   <div
                     className="w-3 h-3 rounded-full mr-2"
                     style={{ backgroundColor: item.color }}
                   />
-                  <span className="text-gray-700 dark:text-gray-300">{item.name}</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {item.name}
+                  </span>
                 </div>
                 <span className="text-gray-900 dark:text-white font-medium">
                   {item.value} cases
@@ -148,8 +167,8 @@ export function AIInsights() {
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="department" 
+              <XAxis
+                dataKey="department"
                 className="text-gray-600 dark:text-gray-400"
                 angle={-45}
                 textAnchor="end"
@@ -158,10 +177,10 @@ export function AIInsights() {
               <YAxis className="text-gray-600 dark:text-gray-400" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'rgb(31 41 55)',
-                  border: 'none',
-                  borderRadius: '8px',
-                  color: 'white',
+                  backgroundColor: "rgb(31 41 55)",
+                  border: "none",
+                  borderRadius: "8px",
+                  color: "white",
                 }}
               />
               <Bar dataKey="positive" stackId="a" fill="#10B981" />
@@ -184,18 +203,20 @@ export function AIInsights() {
                 Gender Bias Alert
               </h4>
               <p className="text-sm text-red-700 dark:text-red-300">
-                Detected potential gender bias in nominations for technical roles. 
-                Male employees are receiving 2.3x more nominations in engineering.
+                Detected potential gender bias in nominations for technical
+                roles. Male employees are receiving 2.3x more nominations in
+                engineering.
               </p>
             </div>
-            
+
             <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-l-4 border-orange-500">
               <h4 className="font-medium text-orange-800 dark:text-orange-400 mb-2">
                 Department Imbalance
               </h4>
               <p className="text-sm text-orange-700 dark:text-orange-300">
-                Sales department has 40% higher nomination rates compared to other departments 
-                of similar size. Consider reviewing nomination criteria.
+                Sales department has 40% higher nomination rates compared to
+                other departments of similar size. Consider reviewing nomination
+                criteria.
               </p>
             </div>
 
@@ -204,7 +225,7 @@ export function AIInsights() {
                 Tenure Pattern
               </h4>
               <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                Employees with 5+ years experience receive 60% more nominations. 
+                Employees with 5+ years experience receive 60% more nominations.
                 New hire contributions may be underrecognized.
               </p>
             </div>
@@ -221,18 +242,19 @@ export function AIInsights() {
                 Nomination Review Process
               </h4>
               <p className="text-sm text-blue-700 dark:text-blue-300">
-                Implement blind review for initial screening to reduce unconscious bias. 
-                Names and demographic identifiers should be hidden during first review.
+                Implement blind review for initial screening to reduce
+                unconscious bias. Names and demographic identifiers should be
+                hidden during first review.
               </p>
             </div>
-            
+
             <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <h4 className="font-medium text-green-800 dark:text-green-400 mb-2">
                 Diversity Targets
               </h4>
               <p className="text-sm text-green-700 dark:text-green-300">
-                Set department-specific nomination targets to ensure equal recognition 
-                opportunities across all teams and roles.
+                Set department-specific nomination targets to ensure equal
+                recognition opportunities across all teams and roles.
               </p>
             </div>
 
@@ -241,8 +263,8 @@ export function AIInsights() {
                 Training Initiative
               </h4>
               <p className="text-sm text-purple-700 dark:text-purple-300">
-                Provide bias awareness training for managers and nomination reviewers 
-                to improve fairness in the selection process.
+                Provide bias awareness training for managers and nomination
+                reviewers to improve fairness in the selection process.
               </p>
             </div>
           </div>

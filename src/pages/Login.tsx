@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Card } from '../components/ui/Card';
-import { Award, Sun, Moon } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
+import React, { useState } from "react";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card } from "../components/ui/Card";
+import { Award, Sun, Moon } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
 export function Login() {
   const { login, isAuthenticated, isLoading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+
+  // 1) Start empty (no hardcoded demo creds)
   const [credentials, setCredentials] = useState({
-    email: 'admin@company.com',
-    password: 'admin123',
+    username: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (isAuthenticated) {
@@ -31,13 +34,20 @@ export function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsSubmitting(true);
 
     try {
-      await login(credentials.email, credentials.password);
-    } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      await login(credentials.username, credentials.password);
+      // AuthContext handles token/role and sets isAuthenticated.
+    } catch (err: any) {
+      // 2) Better error messages from backend if available
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.message ||
+        "Invalid credentials. Please try again.";
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -80,15 +90,22 @@ export function Login() {
 
             {error && (
               <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800">
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </p>
               </div>
             )}
 
             <Input
               label="Email"
               type="email"
-              value={credentials.email}
-              onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+              value={credentials.username}
+              onChange={(e) =>
+                setCredentials((prev) => ({
+                  ...prev,
+                  username: e.target.value,
+                }))
+              }
               required
               placeholder="Enter your email"
             />
@@ -97,29 +114,39 @@ export function Login() {
               label="Password"
               type="password"
               value={credentials.password}
-              onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+              onChange={(e) =>
+                setCredentials((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                }))
+              }
               required
               placeholder="Enter your password"
             />
 
+            {/* 4) Optional: disable until filled */}
             <Button
               type="submit"
               className="w-full"
               isLoading={isSubmitting}
+              disabled={
+                isSubmitting || !credentials.username || !credentials.password
+              }
             >
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
 
-            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <p className="text-sm text-blue-700 dark:text-blue-300 font-medium mb-2">
-                Demo Credentials:
-              </p>
-              <p className="text-sm text-blue-600 dark:text-blue-400">
-                <strong>Email:</strong> admin@company.com<br />
-                <strong>Password:</strong> admin123
-              </p>
-            </div>
+            {/* 3) Optional: remove the demo credentials block */}
           </form>
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+            Don’t have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
         </Card>
       </div>
     </div>
