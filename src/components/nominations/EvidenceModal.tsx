@@ -1,8 +1,8 @@
-import React from 'react';
-import { Modal } from '../ui/Modal';
-import { Card } from '../ui/Card';
-import { Nomination } from '../../types';
-import { MessageSquare, FileText, Clock, Calendar, User, TrendingUp } from 'lucide-react';
+import React from "react";
+import { Modal } from "../ui/Modal";
+import { Card } from "../ui/Card";
+import { Nomination } from "../../types";
+import { MessageSquare, FileText, Clock, Calendar } from "lucide-react";
 
 interface EvidenceModalProps {
   isOpen: boolean;
@@ -10,16 +10,63 @@ interface EvidenceModalProps {
   nomination: Nomination | null;
 }
 
-export function EvidenceModal({ isOpen, onClose, nomination }: EvidenceModalProps) {
+export function EvidenceModal({
+  isOpen,
+  onClose,
+  nomination,
+}: EvidenceModalProps) {
   if (!nomination) return null;
 
-  const { evidence } = nomination;
+  // Temporary dummy evidence until backend integration
+  const evidence = {
+    slackMessages: [
+      {
+        id: "1",
+        author: "John Doe",
+        channel: "#general",
+        message: "Great job on the project!",
+        timestamp: new Date().toISOString(),
+        reactions: 3,
+      },
+      {
+        id: "2",
+        author: "Jane Smith",
+        channel: "#engineering",
+        message: "Thanks for helping with the deployment.",
+        timestamp: new Date().toISOString(),
+        reactions: 5,
+      },
+    ],
+    jiraTickets: [
+      {
+        id: "JIRA-101",
+        title: "Fix login bug",
+        status: "Done",
+        assignee: "Alice",
+        storyPoints: 3,
+        completedDate: new Date().toISOString(),
+      },
+      {
+        id: "JIRA-102",
+        title: "Implement dashboard",
+        status: "In Progress",
+        assignee: "Bob",
+        storyPoints: 5,
+        completedDate: new Date().toISOString(),
+      },
+    ],
+    attendanceData: [
+      { date: "2025-08-01", status: "present", hoursWorked: 8, overtime: 1 },
+      { date: "2025-08-02", status: "present", hoursWorked: 9, overtime: 2 },
+      { date: "2025-08-03", status: "absent", hoursWorked: 0, overtime: 0 },
+    ],
+  };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Evidence for ${nomination.employeeName}`}
+      title={`Evidence for ${nomination.nominee_name}`}
       size="xl"
     >
       <div className="space-y-6">
@@ -115,11 +162,13 @@ export function EvidenceModal({ isOpen, onClose, nomination }: EvidenceModalProp
                     <span className="font-medium text-gray-900 dark:text-white">
                       {ticket.id}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      ticket.status === 'Done' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
-                        : 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        ticket.status === "Done"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400"
+                          : "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400"
+                      }`}
+                    >
                       {ticket.status}
                     </span>
                   </div>
@@ -131,7 +180,8 @@ export function EvidenceModal({ isOpen, onClose, nomination }: EvidenceModalProp
                     <span>{ticket.storyPoints} points</span>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Completed: {new Date(ticket.completedDate).toLocaleDateString()}
+                    Completed:{" "}
+                    {new Date(ticket.completedDate).toLocaleDateString()}
                   </p>
                 </div>
               </Card>
@@ -149,9 +199,15 @@ export function EvidenceModal({ isOpen, onClose, nomination }: EvidenceModalProp
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {evidence.attendanceData.filter(d => d.status === 'present').length}
+                  {
+                    evidence.attendanceData.filter(
+                      (d) => d.status === "present"
+                    ).length
+                  }
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Days Present</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Days Present
+                </p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -159,7 +215,9 @@ export function EvidenceModal({ isOpen, onClose, nomination }: EvidenceModalProp
                     .reduce((total, record) => total + record.hoursWorked, 0)
                     .toFixed(1)}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Hours</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Total Hours
+                </p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -167,15 +225,22 @@ export function EvidenceModal({ isOpen, onClose, nomination }: EvidenceModalProp
                     .reduce((total, record) => total + record.overtime, 0)
                     .toFixed(1)}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Overtime Hours</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Overtime Hours
+                </p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {(evidence.attendanceData
-                    .reduce((total, record) => total + record.hoursWorked, 0) / evidence.attendanceData.length)
-                    .toFixed(1)}
+                  {(
+                    evidence.attendanceData.reduce(
+                      (total, record) => total + record.hoursWorked,
+                      0
+                    ) / evidence.attendanceData.length
+                  ).toFixed(1)}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Avg Hours/Day</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Avg Hours/Day
+                </p>
               </div>
             </div>
           </Card>

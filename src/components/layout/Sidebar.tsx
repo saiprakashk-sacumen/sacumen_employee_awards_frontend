@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
@@ -8,8 +8,8 @@ import {
   Settings,
   Award,
   Plus,
-} from 'lucide-react';
-import { cn } from '../../utils/cn';
+} from "lucide-react";
+import { cn } from "../../utils/cn";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -17,12 +17,14 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Nominations', href: '/nominations', icon: Award },
-  { name: 'Submit Nomination', href: '/submit-nomination', icon: Plus },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'AI Insights', href: '/ai-insights', icon: Brain },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Onboarding Manager", href: "/onboarding-manager", icon: FileText },
+  { name: "Nominations", href: "/nominations", icon: Award },
+  { name: "Submit Nomination", href: "/submit-nomination", icon: Plus },
+  { name: "Reports", href: "/reports", icon: BarChart3 },
+  { name: "Sentimental Insights", href: "/sentimental-insights", icon: Brain },
+  { name: "AI Insights", href: "/ai-insights", icon: Brain },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar({ isCollapsed }: SidebarProps) {
@@ -31,8 +33,8 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
   return (
     <div
       className={cn(
-        'bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out',
-        isCollapsed ? 'w-16' : 'w-64'
+        "bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out",
+        isCollapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
@@ -63,20 +65,20 @@ export function Sidebar({ isCollapsed }: SidebarProps) {
               key={item.name}
               to={item.href}
               className={cn(
-                'group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors',
+                "group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors",
                 isActive
-                  ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700',
-                isCollapsed && 'justify-center'
+                  ? "bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700",
+                isCollapsed && "justify-center"
               )}
               title={isCollapsed ? item.name : undefined}
             >
               <item.icon
                 className={cn(
-                  'h-5 w-5 flex-shrink-0',
-                  isActive 
-                    ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                  "h-5 w-5 flex-shrink-0",
+                  isActive
+                    ? "text-blue-600 dark:text-blue-400"
+                    : "text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
                 )}
               />
               {!isCollapsed && <span className="ml-3">{item.name}</span>}
