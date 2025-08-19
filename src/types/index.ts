@@ -2,37 +2,29 @@
 export type UserRole = "admin" | "manager" | "employee";
 
 export interface User {
+  is_approved?: boolean;
   id?: string;
   name?: string;
   email?: string;
-  role: string; // simplify for now
+  role: string;
   department?: string;
   avatar?: string;
 }
 
 export interface Nomination {
-  id: string;
-  employeeName: string;
-  employeeId: string;
-  department: string;
-  nominatorName: string;
-  nominatorId: string;
-  awardType: "monthly" | "quarterly" | "yearly";
-  title: string;
-  description: string;
-  resourceName: string;
-  projectAligned?: string;
-  verbiage: string;
-  supportingAcknowledgement: string;
-  coreValues: CoreValue[];
-  overallRating: number;
-  supportingDocuments: SupportingDocument[];
-  sentimentScore: number;
-  biasFlags: string[];
-  hasBiasIssues: boolean;
-  dateSubmitted: string;
-  status: "pending" | "approved" | "rejected" | "under_review";
-  evidence: Evidence;
+  id: number;
+  nominee_id: string;
+  nominee_name: string;
+  project_name: string;
+  justification_text: string;
+  customer_email: string;
+  core_value: string;
+  rating: number;
+  nomination_type: string;
+  manager_id: number;
+  manager_name: string;
+  created_at: string;
+  updated_at: string | null;
 }
 
 export type CoreValue =
@@ -109,5 +101,78 @@ export interface DashboardMetrics {
     month: string;
     nominations: number;
     sentiment: number;
+  }>;
+}
+
+// Onboarding Manager types
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  status: "active" | "inactive" | "completed";
+  createdAt: string;
+}
+
+export interface ManagerProjectMapping {
+  id: string;
+  managerId: string;
+  managerName: string;
+  projectId: string;
+  projectName: string;
+  employeeCount: number;
+  employees: User[];
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OnboardingMetrics {
+  totalManagers: number;
+  totalProjects: number;
+  totalEmployees: number;
+  overloadedManagers: number;
+  managerDistribution: Array<{
+    managerName: string;
+    employeeCount: number;
+  }>;
+}
+// Sentimental Insights types
+export interface SentimentResult {
+  nomination_id: number;
+  employee_id: string;
+  employee_name: string;
+  manager_id: number;
+  manager_name: string;
+  project_name: string;
+  nomination_type: "monthly" | "quarterly" | "yearly";
+  sentiment_label: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+  sentiment_score: number;
+  predicted_core_value: string;
+  core_value_alignment: number;
+  analyzed_at: string;
+}
+
+export interface SentimentMetrics {
+  totalAnalyzed: number;
+  averageSentimentScore: number;
+  sentimentDistribution: {
+    positive: number;
+    negative: number;
+    neutral: number;
+  };
+  topCoreValues: Array<{
+    value: string;
+    count: number;
+    averageAlignment: number;
+  }>;
+  projectSentiments: Array<{
+    project: string;
+    averageScore: number;
+    totalNominations: number;
+  }>;
+  managerPerformance: Array<{
+    manager: string;
+    averageScore: number;
+    totalNominations: number;
   }>;
 }

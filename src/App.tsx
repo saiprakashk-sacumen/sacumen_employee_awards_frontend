@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { ToastProvider } from "./components/ui/Toast";
 import { useAuth } from "./contexts/AuthContext";
 import { Layout } from "./components/layout/Layout";
 import { Login } from "./pages/Login";
@@ -16,7 +17,9 @@ import { SubmitNomination } from "./pages/SubmitNomination";
 import { Reports } from "./pages/Reports";
 import { AIInsights } from "./pages/AIInsights";
 import { Settings } from "./pages/Settings";
+import { OnboardingManager } from "./pages/OnboardingManager";
 import { Signup } from "./pages/signup";
+import { SentimentalInsights } from "./pages/SentimentalInsights";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -48,7 +51,9 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="nominations" element={<Nominations />} />
         <Route path="submit-nomination" element={<SubmitNomination />} />
+        <Route path="onboarding-manager" element={<OnboardingManager />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="sentimental-insights" element={<SentimentalInsights />} />
         <Route path="ai-insights" element={<AIInsights />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -60,11 +65,13 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

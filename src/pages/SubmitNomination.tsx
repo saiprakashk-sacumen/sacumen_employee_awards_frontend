@@ -1,54 +1,61 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Textarea } from '../components/ui/Textarea';
-import { Select } from '../components/ui/Select';
-import { FileUpload } from '../components/ui/FileUpload';
-import { Checkbox } from '../components/ui/Checkbox';
-import { Award, Star, Users, Heart, Shield, Target } from 'lucide-react';
-import { NominationFormData, CoreValue } from '../types';
-import { MockAPI } from '../utils/mockApi';
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Card } from "../components/ui/Card";
+import { Textarea } from "../components/ui/Textarea";
+import { Select } from "../components/ui/Select";
+import { Checkbox } from "../components/ui/Checkbox";
+import { Award, Star, Users, Heart, Shield, Target } from "lucide-react";
+import { CoreValue } from "../types";
+import {
+  getProjects,
+  getEmployeesByProject,
+  submitNomination,
+} from "../utils/api";
 
 const coreValueOptions = [
-  { 
-    value: 'customer_delight' as CoreValue, 
-    label: 'Customer Delight',
+  {
+    value: "customer_delight" as CoreValue,
+    label: "Customer Delight",
     icon: <Heart className="h-4 w-4" />,
-    description: 'Goes above and beyond to ensure customer satisfaction'
+    description: "Goes above and beyond to ensure customer satisfaction",
   },
-  { 
-    value: 'innovation' as CoreValue, 
-    label: 'Innovation',
+  {
+    value: "innovation" as CoreValue,
+    label: "Innovation",
     icon: <Star className="h-4 w-4" />,
-    description: 'Brings creative solutions and new ideas to challenges'
+    description: "Brings creative solutions and new ideas to challenges",
   },
-  { 
-    value: 'team_work' as CoreValue, 
-    label: 'Team Work',
+  {
+    value: "team_work" as CoreValue,
+    label: "Team Work",
     icon: <Users className="h-4 w-4" />,
-    description: 'Collaborates effectively and supports team members'
+    description: "Collaborates effectively and supports team members",
   },
-  { 
-    value: 'being_fair' as CoreValue, 
-    label: 'Being Fair',
+  {
+    value: "being_fair" as CoreValue,
+    label: "Being Fair",
     icon: <Shield className="h-4 w-4" />,
-    description: 'Demonstrates integrity and treats everyone equitably'
+    description: "Demonstrates integrity and treats everyone equitably",
   },
-  { 
-    value: 'ownership' as CoreValue, 
-    label: 'Ownership',
+  {
+    value: "ownership" as CoreValue,
+    label: "Ownership",
     icon: <Target className="h-4 w-4" />,
-    description: 'Takes responsibility and drives results proactively'
+    description: "Takes responsibility and drives results proactively",
   },
 ];
 
 export function SubmitNomination() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCoreValues, setSelectedCoreValues] = useState<CoreValue[]>([]);
-  const [supportingFiles, setSupportingFiles] = useState<File[]>([]);
+  const [selectedCoreValue, setSelectedCoreValue] = useState<CoreValue | null>(
+    null
+  );
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const [projects, setProjects] = useState<string[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
 
   const {
     register,
@@ -56,51 +63,80 @@ export function SubmitNomination() {
     formState: { errors },
     reset,
     watch,
-  } = useForm<NominationFormData>();
+    setValue,
+  } = useForm();
 
-  const awardType = watch('awardType');
+  const selectedProject = watch("projectAligned");
 
-  const onSubmit = async (data: NominationFormData) => {
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoadingProjects(true);
+        const data = await getProjects();
+        setProjects(data);
+      } catch (err) {
+        console.error("Failed to fetch projects", err);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  const handleProjectChange = async (projectName: string) => {
+    setValue("resourceName", "");
+
+    try {
+      setLoadingEmployees(true);
+      const data = await getEmployeesByProject(projectName);
+      setEmployees(data);
+    } catch (err) {
+      console.error("Failed to fetch employees", err);
+    } finally {
+      setLoadingEmployees(false);
+    }
+  };
+
+  const onSubmit = async (data: any) => {
+    if (!selectedCoreValue) {
+      alert("Please select one core value");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // Simulate API call to submit nomination
-      await MockAPI.submitNomination({
-        ...data,
-        coreValues: selectedCoreValues,
-        supportingDocuments: supportingFiles,
+      await submitNomination({
+        nominee_id: data.resourceName, // employee id
+        project_name: data.projectAligned,
+        justification_text: data.verbiage,
+        customer_email: data.supportingAcknowledgement,
+        core_value: selectedCoreValue,
+        rating: Number(data.overallRating),
+        nomination_type: data.nominationType,
       });
-      
+
       setSubmitSuccess(true);
       reset();
-      setSelectedCoreValues([]);
-      setSupportingFiles([]);
-      
-      // Reset success message after 5 seconds
+      setSelectedCoreValue(null);
+      setEmployees([]);
+
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
-      console.error('Failed to submit nomination:', error);
+      console.error("Failed to submit nomination:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCoreValueChange = (value: CoreValue, checked: boolean) => {
-    if (checked) {
-      setSelectedCoreValues(prev => [...prev, value]);
-    } else {
-      setSelectedCoreValues(prev => prev.filter(v => v !== value));
-    }
-  };
-
   const getRatingLabel = (rating: number) => {
     const labels = {
-      1: 'Poor',
-      2: 'Below Average',
-      3: 'Average',
-      4: 'Good',
-      5: 'Excellent'
+      1: "Poor",
+      2: "Below Average",
+      3: "Average",
+      4: "Good",
+      5: "Excellent",
     };
-    return labels[rating as keyof typeof labels] || '';
+    return labels[rating as keyof typeof labels] || "";
   };
 
   return (
@@ -125,7 +161,8 @@ export function SubmitNomination() {
                 Nomination Submitted Successfully!
               </h3>
               <p className="text-green-700 dark:text-green-300">
-                Your nomination has been submitted and will be reviewed by the awards committee.
+                Your nomination has been submitted and will be reviewed by the
+                awards committee.
               </p>
             </div>
           </div>
@@ -141,34 +178,58 @@ export function SubmitNomination() {
               Basic Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                label="Resource Name *"
-                {...register('resourceName', { 
-                  required: 'Resource name is required' 
-                })}
-                error={errors.resourceName?.message}
-                placeholder="Enter the nominee's full name"
-              />
-              
+              {/* Project Selection */}
               <Select
-                label="Award Type *"
-                {...register('awardType', { 
-                  required: 'Award type is required' 
+                label="Project *"
+                {...register("projectAligned", {
+                  required: "Project is required",
+                })}
+                value={watch("projectAligned") || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setValue("projectAligned", value, { shouldValidate: true });
+                  handleProjectChange(value);
+                }}
+                options={[
+                  {
+                    value: "",
+                    label: loadingProjects ? "Loading..." : "Select project",
+                  },
+                  ...projects.map((p) => ({ value: p, label: p })),
+                ]}
+                error={
+                  typeof errors.projectAligned?.message === "string"
+                    ? errors.projectAligned.message
+                    : undefined
+                }
+              />
+
+              {/* Employee Selection */}
+              <Select
+                label="Resource Name *"
+                {...register("resourceName", {
+                  required: "Employee is required",
                 })}
                 options={[
-                  { value: '', label: 'Select award type' },
-                  { value: 'monthly', label: 'Monthly Award' },
-                  { value: 'quarterly', label: 'Quarterly Award' },
-                  { value: 'yearly', label: 'Yearly Award' },
+                  {
+                    value: "",
+                    label: loadingEmployees
+                      ? "Loading..."
+                      : !selectedProject
+                      ? "Select project first"
+                      : "Select employee",
+                  },
+                  ...employees.map((emp) => ({
+                    value: emp.id, // "EMP004"
+                    label: emp.name ?? emp.email ?? emp.id,
+                  })),
                 ]}
-                error={errors.awardType?.message}
-              />
-              
-              <Input
-                label="Project Aligned with (Delivery Team only)"
-                {...register('projectAligned')}
-                placeholder="Enter project name if applicable"
-                hint="Only required for delivery team members"
+                error={
+                  typeof errors.resourceName?.message === "string"
+                    ? errors.resourceName.message
+                    : undefined
+                }
+                disabled={!selectedProject || loadingEmployees}
               />
             </div>
           </div>
@@ -181,28 +242,34 @@ export function SubmitNomination() {
             <div className="space-y-6">
               <Textarea
                 label="Verbiage for Nomination *"
-                {...register('verbiage', { 
-                  required: 'Nomination description is required',
+                {...register("verbiage", {
+                  required: "Nomination description is required",
                   minLength: {
                     value: 50,
-                    message: 'Please provide at least 50 characters'
-                  }
+                    message: "Please provide at least 50 characters",
+                  },
                 })}
-                error={errors.verbiage?.message}
-                placeholder="Describe why this person deserves recognition. Include specific examples of their contributions, achievements, and impact..."
+                error={
+                  typeof errors.verbiage?.message === "string"
+                    ? errors.verbiage.message
+                    : undefined
+                }
+                placeholder="Describe why this person deserves recognition..."
                 rows={6}
-                hint="Minimum 50 characters. Be specific about achievements and impact."
               />
-              
+
               <Textarea
                 label="Supporting Acknowledgement (Adds Value) *"
-                {...register('supportingAcknowledgement', { 
-                  required: 'Supporting acknowledgement is required' 
+                {...register("supportingAcknowledgement", {
+                  required: "Supporting acknowledgement is required",
                 })}
-                error={errors.supportingAcknowledgement?.message}
-                placeholder="Provide additional context, client feedback, or specific examples that support this nomination..."
+                error={
+                  typeof errors.supportingAcknowledgement?.message === "string"
+                    ? errors.supportingAcknowledgement.message
+                    : undefined
+                }
+                placeholder="Provide additional context, client feedback..."
                 rows={4}
-                hint="Include any client feedback, peer recognition, or measurable outcomes"
               />
             </div>
           </div>
@@ -210,18 +277,26 @@ export function SubmitNomination() {
           {/* Core Values Alignment */}
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Core Values Alignment *
+              Core Value Alignment *
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Select which core values your nominee exemplifies (select all that apply):
-            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {coreValueOptions.map((option) => (
-                <Card key={option.value} padding="sm" className="hover:shadow-md transition-shadow">
-                  <div className="flex items-start space-x-3">
+                <Card
+                  key={option.value}
+                  padding="sm"
+                  className={`hover:shadow-md transition-shadow cursor-pointer ${
+                    selectedCoreValue === option.value
+                      ? "ring-2 ring-blue-500"
+                      : ""
+                  }`}
+                >
+                  <div
+                    onClick={() => setSelectedCoreValue(option.value)}
+                    className="flex items-start space-x-3 cursor-pointer"
+                  >
                     <Checkbox
-                      checked={selectedCoreValues.includes(option.value)}
-                      onChange={(e) => handleCoreValueChange(option.value, e.target.checked)}
+                      checked={selectedCoreValue === option.value}
+                      onChange={() => setSelectedCoreValue(option.value)}
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
@@ -238,9 +313,9 @@ export function SubmitNomination() {
                 </Card>
               ))}
             </div>
-            {selectedCoreValues.length === 0 && (
+            {!selectedCoreValue && (
               <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-                Please select at least one core value
+                Please select one core value
               </p>
             )}
           </div>
@@ -250,83 +325,72 @@ export function SubmitNomination() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Overall Rating *
             </h2>
-            <div className="space-y-4">
-              <Select
-                label="Overall Rating for Your Nominee"
-                {...register('overallRating', { 
-                  required: 'Overall rating is required',
-                  valueAsNumber: true,
-                  min: { value: 1, message: 'Please select a rating' }
-                })}
-                options={[
-                  { value: '', label: 'Select rating' },
-                  { value: '5', label: '5 - Excellent' },
-                  { value: '4', label: '4 - Good' },
-                  { value: '3', label: '3 - Average' },
-                  { value: '2', label: '2 - Below Average' },
-                  { value: '1', label: '1 - Poor' },
-                ]}
-                error={errors.overallRating?.message}
-              />
-              
-              {watch('overallRating') && (
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-5 w-5 ${
-                          star <= Number(watch('overallRating'))
-                            ? 'text-yellow-400 fill-current'
-                            : 'text-gray-300 dark:text-gray-600'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {getRatingLabel(Number(watch('overallRating')))}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Supporting Documents */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Supporting Documents
-            </h2>
-            <FileUpload
-              label="Upload Supporting Documents"
-              accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.gif"
-              multiple={true}
-              maxSize={10}
-              files={supportingFiles}
-              onFilesChange={setSupportingFiles}
-              hint="Upload emails, Slack messages, client feedback, or other documents that support this nomination. Accepted formats: PDF, DOC, DOCX, TXT, PNG, JPG, GIF (max 10MB each)"
+            <Select
+              label="Overall Rating"
+              {...register("overallRating", {
+                required: "Overall rating is required",
+                valueAsNumber: true,
+              })}
+              options={[
+                { value: "", label: "Select rating" },
+                { value: "5", label: "5 - Excellent" },
+                { value: "4", label: "4 - Good" },
+                { value: "3", label: "3 - Average" },
+              ]}
+              error={
+                typeof errors.overallRating?.message === "string"
+                  ? errors.overallRating.message
+                  : undefined
+              }
             />
+
+            {watch("overallRating") && (
+              <div className="flex items-center space-x-2 mt-2">
+                <div className="flex space-x-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 ${
+                        star <= Number(watch("overallRating"))
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300 dark:text-gray-600"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {getRatingLabel(Number(watch("overallRating")))}
+                </span>
+              </div>
+            )}
           </div>
+          <Select
+            label="Nomination Type *"
+            {...register("nominationType", {
+              required: "Nomination type is required",
+            })}
+            options={[
+              { value: "", label: "Select nomination type" },
+              { value: "monthly", label: "Monthly" },
+              { value: "quarterly", label: "Quarterly" },
+              { value: "yearly", label: "Yearly" },
+            ]}
+            error={
+              typeof errors.nominationType?.message === "string"
+                ? errors.nominationType.message
+                : undefined
+            }
+          />
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                reset();
-                setSelectedCoreValues([]);
-                setSupportingFiles([]);
-              }}
-            >
-              Reset Form
-            </Button>
-            <Button
+          <div className="flex justify-end pt-6">
+            <button
               type="submit"
-              isLoading={isSubmitting}
-              disabled={selectedCoreValues.length === 0}
+              disabled={isSubmitting || !selectedCoreValue}
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Nomination'}
-            </Button>
+              {isSubmitting ? "Submitting..." : "Submit Nomination"}
+            </button>
           </div>
         </form>
       </Card>
