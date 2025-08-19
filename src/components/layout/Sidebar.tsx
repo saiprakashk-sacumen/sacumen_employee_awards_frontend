@@ -8,6 +8,7 @@ import {
   Settings,
   Award,
   Plus,
+  Trophy,
 } from "lucide-react";
 import { cn } from "../../utils/cn";
 
@@ -23,6 +24,8 @@ const navigation = [
   { name: "Submit Nomination", href: "/submit-nomination", icon: Plus },
   { name: "Reports", href: "/reports", icon: BarChart3 },
   { name: "Sentimental Insights", href: "/sentimental-insights", icon: Brain },
+  { name: "Employee Metrics", href: "/employee-metrics", icon: BarChart3 },
+  { name: "Top Nominees", href: "/top-nominees", icon: Trophy },
   { name: "AI Insights", href: "/ai-insights", icon: Brain },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
