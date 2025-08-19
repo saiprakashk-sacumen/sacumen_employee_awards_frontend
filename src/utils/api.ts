@@ -33,15 +33,6 @@ export const signupRequest = async (data: {
 };
 
 // ---- Onboarding Manager ----
-export const getOnboardingMetrics = async () => {
-  const res = await api.get("/onboarding/metrics");
-  return res.data;
-};
-
-export const getUsers = async () => {
-  const res = await api.get("/users");
-  return res.data;
-};
 
 export const getManagers = async () => {
   const res = await api.get("/managers/");
@@ -73,23 +64,6 @@ export async function submitNomination(data: {
   return response.data;
 }
 
-export const getManagerProjectMappings = async (
-  page: number,
-  pageSize: number,
-  search: string,
-  filters: { managerId: string; projectId: string }
-) => {
-  const res = await api.get("/mappings", {
-    params: {
-      page,
-      pageSize,
-      search,
-      ...filters,
-    },
-  });
-  return res.data;
-};
-
 export const assignManagerToProject = async (
   projectName: string,
   managerId: number
@@ -99,13 +73,9 @@ export const assignManagerToProject = async (
   );
   return res.data;
 };
-
-export const exportManagerProjectMappings = async (format: string) => {
-  const res = await api.get(`/mappings/export`, {
-    params: { format },
-    responseType: "blob", // for file download
-  });
-  return res;
+export const getMetrics = async (): Promise<string> => {
+  const response = await api.get("/metrics");
+  return response.data;
 };
 
 export default api;

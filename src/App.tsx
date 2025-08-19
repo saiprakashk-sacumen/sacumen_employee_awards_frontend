@@ -20,6 +20,8 @@ import { Settings } from "./pages/Settings";
 import { OnboardingManager } from "./pages/OnboardingManager";
 import { Signup } from "./pages/signup";
 import { SentimentalInsights } from "./pages/SentimentalInsights";
+import { TopNominees } from "./pages/TopNominees";
+import EmployeeMetrics from "./pages/EmployeeMetrics";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -54,6 +56,8 @@ function AppRoutes() {
         <Route path="onboarding-manager" element={<OnboardingManager />} />
         <Route path="reports" element={<Reports />} />
         <Route path="sentimental-insights" element={<SentimentalInsights />} />
+        <Route path="top-nominees" element={<TopNominees />} />
+        <Route path="employee-metrics" element={<EmployeeMetrics />} />
         <Route path="ai-insights" element={<AIInsights />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
